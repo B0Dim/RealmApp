@@ -88,12 +88,7 @@ class TaskListViewController: UITableViewController {
     }
     
     @IBAction func sortValueChanged(_ sender: UISegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            taskLists = taskLists.sorted(byKeyPath: "date")
-        default:
-            taskLists = taskLists.sorted(byKeyPath: "name")
-        }
+        taskLists = sender.selectedSegmentIndex == 0 ? taskLists.sorted(byKeyPath: "date") : taskLists.sorted(byKeyPath: "name")
         tableView.reloadData()
     }
     
