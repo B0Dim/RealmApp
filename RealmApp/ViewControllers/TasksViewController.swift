@@ -54,66 +54,59 @@ class TasksViewController: UITableViewController {
         
         return cell
     }
+
+    //MARK: - UITableView Delegate
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { _, _, _ in
+            StorageManager.shared.delete(task)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+        }
+        
+        let editAction = UIContextualAction(style: .normal, title: "Edit") { _, _, isDone in
+            self.showAlert(with: task) {
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+            isDone(true)
+        }
+        editAction.backgroundColor = .darkGray
+        
+        let doneTitle = indexPath.section == 0 ? "Done" : "Undone"
+        let doneAction = UIContextualAction(style: .normal, title: doneTitle) { _, _, isDone in
+            StorageManager.shared.done(task)
+
+            let indexPathFirstSection = IndexPath(row: self.currentTasks.count - 1, section: 0)
+            let indexPathSecondSection = IndexPath(row: self.completedTasks.count - 1, section: 1)
+            let moveIndexPath = indexPath.section == 0 ? indexPathSecondSection : indexPathFirstSection
+            tableView.moveRow(at: indexPath, to: moveIndexPath)
+            
+            isDone(true)
+        }
+        doneAction.backgroundColor = .systemGreen
+        
+        return UISwipeActionsConfiguration(actions: [doneAction, editAction, deleteAction])
+    }
     
     @objc private func addButtonPressed() {
         showAlert()
     }
 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 extension TasksViewController {
     
-    private func showAlert() {
-        
-        let alert = AlertController.createAlert(withTitle: "New Task", andMessage: "What do you want to do?")
-        
-        alert.action { newValue, note in
-            self.saveTask(withName: newValue, andNote: note)
+    private func showAlert(with task: Task? = nil, completion: (() -> Void)? = nil) {
+        let title = task != nil ? "Edit Task" : "New Task"
+        let alert = AlertController.createAlert(withTitle: title, andMessage: "What do you want to do?")
+
+        alert.action(with: task) { newValue, note in
+            if let task = task, let completion = completion {
+                StorageManager.shared.edit(task, to: newValue, withNote: note)
+                completion()
+            } else {
+                self.saveTask(withName: newValue, andNote: note)
+            }
         }
         
         present(alert, animated: true)

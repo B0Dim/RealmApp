@@ -34,9 +34,10 @@ class AlertController: UIAlertController {
         }
     }
     
-    func action(completion: @escaping (String, String) -> Void) {
-                        
-        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+    func action(with task: Task?, completion: @escaping (String, String) -> Void) {
+        let title = task == nil ? "Save" : "Update"
+        
+        let saveAction = UIAlertAction(title: title, style: .default) { _ in
             guard let newTask = self.textFields?.first?.text else { return }
             guard !newTask.isEmpty else { return }
             

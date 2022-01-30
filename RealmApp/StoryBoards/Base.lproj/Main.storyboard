@@ -22,6 +22,9 @@
                                 <segment title="A-Z"/>
                             </segments>
                             <color key="selectedSegmentTintColor" red="0.5762385619" green="0.4973896518" blue="0.82914370569999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="sortValueChanged:" destination="ZfN-gF-7xz" eventType="valueChanged" id="gco-cb-lrW"/>
+                            </connections>
                         </segmentedControl>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="TaskListCell" textLabel="kdi-0P-iRq" detailTextLabel="jKj-91-RPz" style="IBUITableViewCellStyleValue1" id="hDY-5f-yxE">

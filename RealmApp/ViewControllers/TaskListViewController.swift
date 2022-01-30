@@ -33,11 +33,18 @@ class TaskListViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskListCell", for: indexPath)
         
         let taskList = taskLists[indexPath.row]
+        let currentTasks = taskList.tasks.filter("isComplete = false")
+        
         var content = cell.defaultContentConfiguration()
         content.text = taskList.name
-        content.secondaryText = "\(taskList.tasks.count)"
+        if currentTasks.isEmpty && !taskList.tasks.isEmpty {
+            cell.accessoryType = .checkmark
+        } else {
+            cell.accessoryType = .none
+            content.secondaryText = "\(taskList.tasks.count)"
+        }
         cell.contentConfiguration = content
-        
+
         return cell
     }
     
@@ -79,6 +86,17 @@ class TaskListViewController: UITableViewController {
     @IBAction func  addButtonPressed(_ sender: Any) {
         showAlert()
     }
+    
+    @IBAction func sortValueChanged(_ sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            taskLists = taskLists.sorted(byKeyPath: "date")
+        default:
+            taskLists = taskLists.sorted(byKeyPath: "name")
+        }
+        tableView.reloadData()
+    }
+    
  
     private func createTempData() {
         DataManager.shared.createTempData {
