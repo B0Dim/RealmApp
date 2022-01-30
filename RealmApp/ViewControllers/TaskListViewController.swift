@@ -41,7 +41,7 @@ class TaskListViewController: UITableViewController {
             cell.accessoryType = .checkmark
         } else {
             cell.accessoryType = .none
-            content.secondaryText = "\(taskList.tasks.count)"
+            content.secondaryText = "\(currentTasks.count)"
         }
         cell.contentConfiguration = content
 
@@ -108,7 +108,8 @@ class TaskListViewController: UITableViewController {
 extension TaskListViewController {
     
     private func showAlert(with taskList: TaskList? = nil, completion: (() -> Void)? = nil) {
-        let alert = AlertController.createAlert(withTitle: "New List", andMessage: "Please insert new value")
+        let title = taskList != nil ? "Edit List" : "New List"
+        let alert = AlertController.createAlert(withTitle: title, andMessage: "What do you want to do?")
         
         alert.action(with: taskList) { newValue in
             if let taskList = taskList, let completion = completion {

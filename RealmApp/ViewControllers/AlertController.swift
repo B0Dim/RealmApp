@@ -55,10 +55,12 @@ class AlertController: UIAlertController {
         
         addTextField { textField in
             textField.placeholder = "New task"
+            textField.text = task?.name
         }
         
         addTextField { textField in
             textField.placeholder = "Note"
+            textField.text = task?.note
         }
     }
 }
